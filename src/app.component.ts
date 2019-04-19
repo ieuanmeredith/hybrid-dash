@@ -1,13 +1,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { Component, OnInit } from '@angular/core';
-
 @Component({
   selector: 'App',
-  template:
-  `<div>
-    <h2>Welcome to {{name}} Angular2!</h2>
-  </div>`
+  templateUrl: "views/components/app/index.html"
 })
 export class AppComponent implements OnInit {
   public readonly name = 'electron-forge';
