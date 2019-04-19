@@ -8,7 +8,8 @@ const irsdk: any = require("node-irsdk");
 })
 export class AppComponent implements OnInit {
   public readonly name = "electron-forge";
-
+// EnergyERSBatteryPct
+// EnergyMGU_KLapDeployPct
   public ngOnInit(): void {
     console.log("component initialized");
 
