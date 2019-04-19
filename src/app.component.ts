@@ -14,8 +14,8 @@ export class AppComponent implements OnInit {
     console.log("component initialized");
 
     irsdk.init({
-      telemetryUpdateInterval: 64, // 15 ticks per second
-      sessionInfoUpdateInterval: 2000
+      telemetryUpdateInterval: 16, // 60 ticks per second
+      sessionInfoUpdateInterval: 1000
     });
 
     const iracing: any = irsdk.getInstance();
