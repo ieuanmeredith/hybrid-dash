@@ -7,15 +7,18 @@ const irsdk: any = require("node-irsdk");
   templateUrl: "views/components/app/index.html"
 })
 export class AppComponent implements OnInit {
-  public readonly name = "electron-forge";
   public soc: number = 0;
   public deploy: number = 0;
   public flags: [];
   public deltaToSesBest: number;
   public lapsLeft: number;
   public timeLeft: number;
-// EnergyERSBatteryPct
-// EnergyMGU_KLapDeployPct
+  public trackTemp: string;
+
+  public rpm: number;
+  public firstLightRpm: number;
+  public lastLightRpm: number;
+
   public ngOnInit(): void {
     console.log("component initialized");
 
@@ -23,7 +26,7 @@ export class AppComponent implements OnInit {
 
     irsdk.init({
       telemetryUpdateInterval: 16, // 60 ticks per second
-      sessionInfoUpdateInterval: 1000
+      sessionInfoUpdateInterval: 1000 // 1 tick per second
     });
 
     const iracing: any = irsdk.getInstance();
@@ -39,10 +42,6 @@ export class AppComponent implements OnInit {
       // process.exit();
     });
 
-    iracing.on("TelemetryDescription", function (data: any): void {
-      console.log("got TelemetryDescription");
-    });
-
     iracing.on("Telemetry", function (data: any): void {
       that.soc = Math.floor(data.values.EnergyERSBatteryPct *  100);
       that.deploy = Math.floor(data.values.EnergyMGU_KLapDeployPct * 100);
@@ -53,6 +52,7 @@ export class AppComponent implements OnInit {
     });
 
     iracing.on("SessionInfo", function (data: any): void {
+      that.trackTemp = data.WeekendInfo.TrackSurfaceTemp;
     });
   }
 }
