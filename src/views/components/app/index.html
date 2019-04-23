@@ -134,6 +134,7 @@
     width: 10px;
     height: 10px;
     margin: 5px;
+    margin-top: 7px;
     zoom: 2;
     display: inline-block;
   }
@@ -158,16 +159,16 @@
 
 <div id="dash">
   <div id="shift-lights">
-    <div class="green led"></div>
-    <div class="green-off led"></div>
-    <div class="green-off led"></div>
-    <div class="green-off led"></div>
-    <div class="green-off led"></div>
-    <div class="orange-off led"></div>
-    <div class="orange-off led"></div>
-    <div class="orange-off led"></div>
-    <div class="red-off led"></div>
-    <div class="red-off led"></div>
+    <div class="green-off led" [ngClass]="{'green' : rpmLightArray && rpm >= rpmLightArray[0]}"></div>
+    <div class="green-off led" [ngClass]="{'green' : rpmLightArray && rpm >= rpmLightArray[1]}"></div>
+    <div class="green-off led" [ngClass]="{'green' : rpmLightArray && rpm >= rpmLightArray[2]}"></div>
+    <div class="green-off led" [ngClass]="{'green' : rpmLightArray && rpm >= rpmLightArray[3]}"></div>
+    <div class="green-off led" [ngClass]="{'green' : rpmLightArray && rpm >= rpmLightArray[4]}"></div>
+    <div class="orange-off led" [ngClass]="{'orange' : rpmLightArray && rpm >= rpmLightArray[5]}"></div>
+    <div class="orange-off led" [ngClass]="{'orange' : rpmLightArray && rpm >= rpmLightArray[6]}"></div>
+    <div class="orange-off led" [ngClass]="{'orange' : rpmLightArray && rpm >= rpmLightArray[7]}"></div>
+    <div class="red-off led" [ngClass]="{'red' : rpmLightArray && rpm >= rpmLightArray[8]}"></div>
+    <div class="red-off led" [ngClass]="{'red' : rpmLightArray && rpm >= rpmLightArray[9]}"></div>
   </div>
 
   <div id="soc-meter">

@@ -15,10 +15,10 @@ export class AppComponent implements OnInit {
   public timeLeft: string = "00:00:00";
   public trackTemp: string = "N/A";
 
-  public rpm: number;
-  public firstLightRpm: number;
-  public lastLightRpm: number;
-  public rpmLightArray: number[] = [];
+  public rpm: number = 0;
+  public firstLightRpm: number = 0;
+  public lastLightRpm: number = 0;
+  public rpmLightArray: number[];
 
   public gear: string = "N";
 
@@ -68,8 +68,27 @@ export class AppComponent implements OnInit {
 
     iracing.on("SessionInfo", function (data: any): void {
       that.trackTemp = data.WeekendInfo.TrackSurfaceTemp;
-      that.firstLightRpm = data.DriverInfo.DriverCarSLFirstRPM;
-      that.lapsLeft = data.DrtiverInfo.DriverCarSLLastRPM;
+
+      if (that.firstLightRpm !== data.DriverInfo.DriverCarSLFirstRPM) {
+        that.firstLightRpm = data.DriverInfo.DriverCarSLFirstRPM;
+      }
+      if (that.lastLightRpm !== data.DrtiverInfo.DriverCarSLLastRPM) {
+        that.lapsLeft = data.DrtiverInfo.DriverCarSLLastRPM;
+      }
+
+      if (that.firstLightRpm === data.DriverInfo.DriverCarSLFirstRPM &&
+          that.lastLightRpm === data.DrtiverInfo.DriverCarSLLastRPM &&
+          !that.rpmLightArray) {
+            that.rpmLightArray = [];
+
+            const diff = (that.lastLightRpm - that.firstLightRpm) / 10;
+
+            for (let i = 0; i < 10; i++) {
+              if (i === 0) { that.rpmLightArray.push(that.firstLightRpm); }
+              else { that.rpmLightArray.push(that.firstLightRpm + diff); }
+            }
+          }
+
     });
   }
 }
