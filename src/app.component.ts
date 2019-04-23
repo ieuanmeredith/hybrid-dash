@@ -7,10 +7,10 @@ const irsdk: any = require("node-irsdk");
   templateUrl: "views/components/app/index.html"
 })
 export class AppComponent implements OnInit {
-  public soc: number = 50;
-  public deploy: number = 30;
+  public soc: number = 0;
+  public deploy: number = 0;
   public flags: [];
-  public deltaToSesBest: string = "+1.23";
+  public deltaToSesBest: string = "+0.00";
   public lapsLeft: number = 0;
   public timeLeft: string = "00:00:00";
   public trackTemp: string = "N/A";
