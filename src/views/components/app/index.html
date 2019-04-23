@@ -1,9 +1,206 @@
-<div>
-  <h2>SoC {{soc}} </h2>
-  <h2>Deploy {{deploy}} </h2>
-  <h2>{{flags}} </h2>
-  <h2>{{deltaToSesBest}} </h2>
-  <h2>{{lapsLeft}} </h2>
-  <h2>{{timeLeft}}</h2>
-  <h2>{{trackTemp}}</h2>
+<style type="text/css">
+  html, body, h1, h2, h3, h4, h5, h6, span {
+    font-family: sans-serif;
+  }
+  body {
+    background: #000000;
+  }
+  .hor-line {
+    width: 100%;
+    border-bottom: #ccc solid 2px;
+  }
+  span {
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    color: #777;
+  }
+  /* Structure */
+  #dash {
+    min-height: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    height: 100%;
+    text-align: center;
+    color: #fff;
+  }
+
+  #shift-lights {
+    width: 100%;
+    text-align: center;
+    height: 10%;
+    margin: auto;
+  }
+
+  #cluster {
+    display: inline-block;
+    width: 75%;
+    height: 83%;
+    border: #ccc solid 2px;
+    margin: auto;
+  }
+
+  #soc-meter, #deploy-meter {
+    width: 10%;
+    height: 83%;
+    border: #ccc solid 2px;
+    position: relative;
+    margin: auto;
+  }
+  #soc-bar, #deploy-bar {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+  }
+  #soc-bar { background: dodgerblue; }
+  #deploy-bar { background: darkorange; }
+
+  #top-section {
+    height: 40%;
+    border-bottom: #ccc solid 2px;
+    display: flex;
+  }
+  #soc, #gear, #deploy {
+    height: 100%;
+    width: 33.3%;
+    margin: auto;
+    display: flex;
+    position: relative;
+  }
+  #gear {
+    border-right: #ccc solid 2px;
+    border-left: #ccc solid 2px;
+  }
+  #gear h1 {
+    margin: auto;
+    font-size: 6em;
+  }
+  #deploy h1, #soc h1 {
+    margin: auto;
+    font-size: 4em;
+  }
+
+  #bottom-section {
+    height: 60%;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  #bot-box-1, #bot-box-2, #bot-box-3, 
+  #bot-box-4, #bot-box-5, #bot-box-6 {
+    width: 49.5%;
+    height: 33%;
+    margin: auto;
+    position: relative;
+    display: flex;
+  }
+  h2 { 
+    margin: auto;
+    font-size: 2em;
+  }
+  #bot-box-1, #bot-box-3, #bot-box-5 {
+    border-right: #ccc solid 1px;
+  }
+  #bot-box-2, #bot-box-4, #bot-box-6 {
+    border-left: #ccc solid 1px;
+  }
+
+  /* LEDs */
+  .green-off {
+    background: rgba(0, 255, 0, 0.2);
+  }
+  .orange-off {
+    background: rgba(255, 255, 0, 0.2);
+  }
+  .red-off {
+    background: rgba(255, 0, 0, 0.3);
+  }
+
+  .green {
+    background-image: -webkit-linear-gradient(top, #13fB04 0%, #58e343 50%, #ADED99 100%);
+    box-shadow: 0px 0px 10px 1px #13fB04;
+  }
+  .orange {
+    background-image: -webkit-linear-gradient(top, #ffb22d 0%, #faba39 50%, #ead698 100%);
+    box-shadow: 0px 0px 10px 1px #f9a004;
+  }
+  .red {
+    background-image: -webkit-linear-gradient(top, #fb1304 0%, #ff816e 50%, #ff774d 100%);
+    box-shadow: 0px 0px 10px 1px #ff7970;
+  }
+
+  .led {
+    border-radius: 5px;
+    width: 10px;
+    height: 10px;
+    margin: 5px;
+    zoom: 2;
+    display: inline-block;
+  }
+  .led:after {
+    display: block;
+    content: '';
+    margin-left: 1px;
+    margin-right: 1px;
+    width: 8px;
+    height: 6px;
+    border-top-right-radius: 4px 3px;
+    border-top-left-radius: 4px 3px;
+    border-bottom-right-radius: 4px 3px;
+    border-bottom-left-radius: 4px 3px;
+    -webkit-border-top-right-radius: 4px 3px;
+    -webkit-border-top-left-radius: 4px 3px;
+    -webkit-border-bottom-right-radius: 4px 3px;
+    -webkit-border-bottom-left-radius: 4px 3px;
+    background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 100%);
+  }
+</style>
+
+<div id="dash">
+  <div id="shift-lights">
+    <div class="green led"></div>
+    <div class="green-off led"></div>
+    <div class="green-off led"></div>
+    <div class="green-off led"></div>
+    <div class="green-off led"></div>
+    <div class="orange-off led"></div>
+    <div class="orange-off led"></div>
+    <div class="orange-off led"></div>
+    <div class="red-off led"></div>
+    <div class="red-off led"></div>
+  </div>
+
+  <div id="soc-meter">
+    <div id="soc-bar"
+      [ngStyle]="{'max-height': soc + '%'}"></div>
+  </div>
+
+  <div id="cluster">
+    <div id="top-section">
+      <div id="soc"><span>SoC</span> <h1>{{soc}}</h1></div>
+      <div id="gear"> <h1>{{gear}}</h1></div>
+      <div id="deploy"><span>Deploy</span> <h1>{{deploy}}</h1></div>
+    </div>
+    <div id="bottom-section">
+      <div id="bot-box-1"><span>Delta</span> <h2>{{deltaToSesBest}}</h2></div>
+      <div id="bot-box-2"><span>Fuel est laps</span></div>
+
+      <div class="hor-line">
+      </div>
+
+      <div id="bot-box-3"><span></span></div>
+      <div id="bot-box-4"><span>Est laps left</span> <h2>{{lapsLeft}}</h2></div>
+
+      <div class="hor-line">
+      </div>
+
+      <div id="bot-box-5"><span>Track Temp</span> <h2>{{trackTemp}}</h2></div>
+      <div id="bot-box-6"><span>Time Left</span> <h2>{{timeLeft}}</h2></div>
+    </div>
+  </div>
+
+  <div id="deploy-meter">
+    <div id="deploy-bar"
+      [ngStyle]="{'max-height': deploy + '%'}"></div>
+  </div>
 </div>
