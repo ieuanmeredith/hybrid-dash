@@ -13,8 +13,11 @@ const createWindow = async () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 600,
-    height: 500,
-    // alwaysOnTop: true
+    height: 400,
+    alwaysOnTop: true,
+    minWidth: 600,
+    minHeight: 400,
+    frame: false
   });
 
   // and load the index.html of the app.

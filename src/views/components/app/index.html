@@ -14,6 +14,7 @@
     top: 2%;
     left: 2%;
     color: #777;
+    font-size: 0.7em;
   }
   /* Structure */
   #dash {
@@ -23,6 +24,8 @@
     height: 100%;
     text-align: center;
     color: #fff;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
   }
 
   #shift-lights {
@@ -47,11 +50,26 @@
     position: relative;
     margin: auto;
   }
+  #soc-meter ul, #deploy-meter ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+  }
+  #soc-meter ul li, #deploy-meter ul li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 9.5%;
+    border-bottom: #ccc solid 2px;
+  }
   #soc-bar, #deploy-bar {
     width: 100%;
     height: 100%;
     position: absolute;
     bottom: 0;
+    z-index: -1;
   }
   #soc-bar { background: dodgerblue; }
   #deploy-bar { background: darkorange; }
@@ -76,15 +94,22 @@
     margin: auto;
     font-size: 6em;
   }
-  #deploy h1, #soc h1 {
+  #deploy h1 {
     margin: auto;
     font-size: 4em;
+    color: darkorange;
+  } 
+  #soc h1 {
+    margin: auto;
+    font-size: 4em;
+    color: dodgerblue;
   }
 
   #bottom-section {
     height: 60%;
     display: flex;
     flex-wrap: wrap;
+    position: relative;
   }
   #bot-box-1, #bot-box-2, #bot-box-3, 
   #bot-box-4, #bot-box-5, #bot-box-6 {
@@ -96,13 +121,65 @@
   }
   h2 { 
     margin: auto;
-    font-size: 2em;
+    font-size: 1.8em;
   }
   #bot-box-1, #bot-box-3, #bot-box-5 {
     border-right: #ccc solid 1px;
   }
   #bot-box-2, #bot-box-4, #bot-box-6 {
     border-left: #ccc solid 1px;
+  }
+
+  #yellow-flag {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 0, 0.8);
+    display: none;
+  }
+  #blue-flag {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgb(38, 0, 255, 0.8);
+    display: none;
+  }
+  #box-box-box {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 179, 0, 0.5);
+    display: none;
+  }
+  #box-box-box h1 {
+    padding: 0;
+    font-weight: 900;
+    margin: auto;
+    color: rgb(0, 0, 0);
+    position: relative;
+    top: -70px;
+  }
+  
+  .car-lr {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 1);
+    display: none;
+  }
+
+  .car-lr h1 {
+    font-size: 11em;
+    padding: 0;
+    font-weight: 900;
+    margin: auto;
+    color: rgb(255, 0, 0);
+    position: relative;
+    top: -70px;
+  }
+
+  .show-flag {
+    display: flex !important;
   }
 
   /* LEDs */
@@ -134,7 +211,7 @@
     width: 10px;
     height: 10px;
     margin: 5px;
-    margin-top: 7px;
+    margin-top: 6px;
     zoom: 2;
     display: inline-block;
   }
@@ -174,6 +251,17 @@
   <div id="soc-meter">
     <div id="soc-bar"
       [ngStyle]="{'max-height': soc + '%'}"></div>
+    <ul>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
   </div>
 
   <div id="cluster">
@@ -182,26 +270,47 @@
       <div id="gear"> <h1>{{gear}}</h1></div>
       <div id="deploy"><span>Deploy</span> <h1>{{deploy}}</h1></div>
     </div>
-    <div id="bottom-section">
+    <div id="bottom-section">      
       <div id="bot-box-1"><span>Delta</span> <h2>{{deltaToSesBest}}</h2></div>
-      <div id="bot-box-2"><span>Fuel est laps</span></div>
+      <div id="bot-box-2"><span>Fuel est laps</span> <h2>{{fuelLapsRemaining.toFixed(2)}}</h2></div>
 
       <div class="hor-line">
       </div>
 
-      <div id="bot-box-3"><span></span></div>
-      <div id="bot-box-4"><span>Est laps left</span> <h2>{{lapsLeft}}</h2></div>
+      <div id="bot-box-3"><span>Deploy Mode</span> <h2>{{deployMode}}</h2></div>
+      <div id="bot-box-4"><span>Fuel (L) / Fuel per lap (L)</span> <h2>{{fuelRemaining}} / {{fuelPerLap}}</h2></div>
 
       <div class="hor-line">
       </div>
 
-      <div id="bot-box-5"><span>Track Temp</span> <h2>{{trackTemp}}</h2></div>
+      <div id="bot-box-5"><span>Track Temp</span> <h2>{{trackTemp}}°C</h2></div>
       <div id="bot-box-6"><span>Time Left</span> <h2>{{timeLeft}}</h2></div>
+
+      <div id="blue-flag"></div>
+      <div id="yellow-flag"></div>
+      <div [ngClass]="{'show-flag': boxboxbox || fuelLapsRemaining < 1.1}" id="box-box-box"><h1>BOX THIS LAP</h1></div>
+
+      <div [ngClass]="{'show-flag': carLR.indexOf('LRCarLeft') > -1}" class="car-lr" id="car-left"> <h1>&#8592;</h1> </div>
+      <div [ngClass]="{'show-flag': carLR.indexOf('LRCarRight') > -1}" class="car-lr" id="car-right"> <h1>&#8594;</h1> </div>
+      <div [ngClass]="{'show-flag': carLR.indexOf('LRCarLeftRight') > -1}" class="car-lr" id="car-three"> <h1>&#8592; &#8594;</h1> </div>
+      <div [ngClass]="{'show-flag': carLR.indexOf('LR2CarsLeft') > -1}" class="car-lr" id="car-2-left"> <h1>&#8592; &#8592;</h1> </div>
+      <div [ngClass]="{'show-flag': carLR.indexOf('LR2CarsRight') > -1}" class="car-lr" id="car-2-right"> <h1>&#8594; &#8594;</h1> </div>
     </div>
   </div>
 
   <div id="deploy-meter">
     <div id="deploy-bar"
       [ngStyle]="{'max-height': deploy + '%'}"></div>
+    <ul>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
   </div>
 </div>

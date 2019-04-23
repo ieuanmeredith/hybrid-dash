@@ -11,9 +11,20 @@ export class AppComponent implements OnInit {
   public deploy: number = 0;
   public flags: [];
   public deltaToSesBest: string = "+0.00";
-  public lapsLeft: number = 0;
   public timeLeft: string = "00:00:00";
   public trackTemp: string = "N/A";
+  public deployMode: string = "0";
+  public carLR: string = "";
+  public lap: number = 0;
+  public lapTimeArray: number[] = [];
+
+  public estLapTime: number = 0;
+  public maxFuel: number = 0;
+  public fuelUsageBuffer: number[] = [];
+  public fuelLapsRemaining: number = 0;
+  public fuelPerLap: string | number = 0;
+  public fuelRemaining: string | number = 0;
+  public boxboxbox: boolean = false;
 
   public rpm: number = 0;
   public firstLightRpm: number = 0;
@@ -21,6 +32,20 @@ export class AppComponent implements OnInit {
   public rpmLightArray: number[];
 
   public gear: string = "N";
+
+  public pad(n: string, width: number, z: any) {
+    z = z || "0";
+    n = n + "";
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+  }
+
+  public getAvgLap(): number {
+    return this.lapTimeArray.length > 0 ? this.lapTimeArray.reduce((partial_sum, a) => partial_sum + a) / this.lapTimeArray.length : 0;
+  }
+
+  public getAvgFuelPerHour(): number {
+    return this.fuelUsageBuffer.length > 0 ? this.fuelUsageBuffer.reduce((partial_sum, a) => partial_sum + a) / this.fuelUsageBuffer.length : 0;
+  }
 
   public ngOnInit(): void {
     console.log("component initialized");
@@ -49,17 +74,54 @@ export class AppComponent implements OnInit {
       that.soc = Math.floor(data.values.EnergyERSBatteryPct *  100);
       that.deploy = Math.floor(data.values.EnergyMGU_KLapDeployPct * 100);
       that.flags = data.values.SessionFlags;
+      that.deployMode = data.values.dcMGUKDeployFixed;
+      that.carLR = data.values.CarLeftRight;
+      that.trackTemp = data.values.TrackTempCrew.toFixed(2);
+      that.fuelRemaining = (Math.round(data.values.FuelLevel * 100) / 100).toFixed(2);
+
+      if (that.fuelUsageBuffer.length <= 3600) {
+        if (Math.floor(data.values.Speed) !== 0 && data.values.FuelLevel > 0.2) {
+          that.fuelUsageBuffer.push(Math.round(data.values.FuelUsePerHour * 100) / 100);
+        }
+      }
+      else {
+        that.fuelUsageBuffer = that.fuelUsageBuffer.splice(1, 3599);
+        that.fuelUsageBuffer.push(Math.round(data.values.FuelUsePerHour * 100) / 100);
+      }
+
+      if (that.lap !== data.values.Lap) {
+        if (that.lap === 0) {
+          that.lap = data.values.Lap;
+        }
+        else {
+          that.lap = data.values.Lap;
+          that.lapTimeArray.push(Math.round(data.values.LapLastLapTime * 100) / 100);
+
+          if (that.lapTimeArray.length > 2) {
+            that.estLapTime = that.getAvgLap();
+          }
+
+          that.fuelLapsRemaining < 2 ? that.boxboxbox = true : that.boxboxbox = false;
+        }
+      }
+
+      if (that.maxFuel > 0 && that.estLapTime > 0) {
+        const lapsPerHour = 3600 / that.estLapTime;
+        const fuelPerHour = that.getAvgFuelPerHour();
+        const fuelPerLap = fuelPerHour / lapsPerHour;
+        that.fuelPerLap = (Math.round(fuelPerLap * 100) / 100).toFixed(2);
+        that.fuelLapsRemaining = (((data.values.FuelLevel * 0.75) - 0.2) / fuelPerLap);
+        if (that.fuelLapsRemaining > 2) { that.boxboxbox = false; }
+      }
 
       const delta = data.values.LapDeltaToSessionBestLap.toFixed(2);
       that.deltaToSesBest = `${delta > 0 ? "+" : ""}${delta}`;
-
-      that.lapsLeft = data.values.SessionLapsRemainEx.toFixed(2);
 
       const secondsLeft = Math.floor(data.values.SessionTimeRemain);
       const hours = Math.floor(secondsLeft / 3600);
       const minutes = Math.floor(secondsLeft / 60);
       const seconds = secondsLeft - minutes * 60;
-      that.timeLeft = `${hours}:${minutes}:${seconds}`;
+      that.timeLeft = `${that.pad(hours.toString(), 2, 0)}:${that.pad(minutes.toString(), 2, 0)}:${that.pad(seconds.toString(), 2, 0)}`;
       that.rpm = data.values.RPM;
       that.gear = data.values.Gear === 0 ? "N"
       : data.values.Gear === -1 ? "R"
@@ -67,28 +129,29 @@ export class AppComponent implements OnInit {
     });
 
     iracing.on("SessionInfo", function (data: any): void {
-      that.trackTemp = data.WeekendInfo.TrackSurfaceTemp;
+      that.maxFuel = data.data.DriverInfo.DriverCarFuelMaxLtr * 0.75;
 
-      if (that.firstLightRpm !== data.DriverInfo.DriverCarSLFirstRPM) {
-        that.firstLightRpm = data.DriverInfo.DriverCarSLFirstRPM;
+      if (that.estLapTime === 0) { that.estLapTime = data.data.DriverInfo.DriverCarEstLapTime; }
+
+      if (that.firstLightRpm !== data.data.DriverInfo.DriverCarSLFirstRPM) {
+        that.firstLightRpm = data.data.DriverInfo.DriverCarSLFirstRPM;
       }
-      if (that.lastLightRpm !== data.DrtiverInfo.DriverCarSLLastRPM) {
-        that.lapsLeft = data.DrtiverInfo.DriverCarSLLastRPM;
+      if (that.lastLightRpm !== data.data.DriverInfo.DriverCarSLLastRPM) {
+        that.lastLightRpm = data.data.DriverInfo.DriverCarSLLastRPM;
       }
 
-      if (that.firstLightRpm === data.DriverInfo.DriverCarSLFirstRPM &&
-          that.lastLightRpm === data.DrtiverInfo.DriverCarSLLastRPM &&
-          !that.rpmLightArray) {
-            that.rpmLightArray = [];
+      if (that.firstLightRpm === data.data.DriverInfo.DriverCarSLFirstRPM &&
+        that.lastLightRpm === data.data.DriverInfo.DriverCarSLLastRPM &&
+        !that.rpmLightArray) {
+          that.rpmLightArray = [];
 
-            const diff = (that.lastLightRpm - that.firstLightRpm) / 10;
+          const diff = (that.lastLightRpm - that.firstLightRpm) / 10;
 
-            for (let i = 0; i < 10; i++) {
-              if (i === 0) { that.rpmLightArray.push(that.firstLightRpm); }
-              else { that.rpmLightArray.push(that.firstLightRpm + diff); }
-            }
+          for (let i = 0; i < 10; i++) {
+            if (i === 0) { that.rpmLightArray.push(that.firstLightRpm); }
+            else { that.rpmLightArray.push(that.rpmLightArray[i - 1] + diff); }
           }
-
+        }
     });
   }
 }
