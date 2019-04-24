@@ -9,7 +9,7 @@ const irsdk: any = require("node-irsdk");
 export class AppComponent implements OnInit {
   public soc: number = 0;
   public deploy: number = 0;
-  public flags: [];
+  public flags: [] = [];
   public deltaToSesBest: string = "+0.00";
   public timeLeft: string = "00:00:00";
   public trackTemp: string = "N/A";
@@ -40,11 +40,19 @@ export class AppComponent implements OnInit {
   }
 
   public getAvgLap(): number {
-    return this.lapTimeArray.length > 0 ? this.lapTimeArray.reduce((partial_sum, a) => partial_sum + a) / this.lapTimeArray.length : 0;
+    let sum = 0;
+    for (let i = 0; i < this.lapTimeArray.length; i++) {
+      sum += this.lapTimeArray[i];
+    }
+    return sum / this.lapTimeArray.length;
   }
 
   public getAvgFuelPerHour(): number {
-    return this.fuelUsageBuffer.length > 0 ? this.fuelUsageBuffer.reduce((partial_sum, a) => partial_sum + a) / this.fuelUsageBuffer.length : 0;
+    let sum = 0;
+    for (let i = 0; i < this.fuelUsageBuffer.length; i++) {
+      sum += this.fuelUsageBuffer[i];
+    }
+    return sum / this.fuelUsageBuffer.length;
   }
 
   public ngOnInit(): void {

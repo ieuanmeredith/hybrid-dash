@@ -114,7 +114,7 @@
   #bot-box-1, #bot-box-2, #bot-box-3, 
   #bot-box-4, #bot-box-5, #bot-box-6 {
     width: 49.5%;
-    height: 33%;
+    height: 32.5%;
     margin: auto;
     position: relative;
     display: flex;
@@ -143,12 +143,26 @@
     height: 100%;
     background: rgb(38, 0, 255, 0.8);
     display: none;
+    overflow: hidden;
+  }
+  #blue-flag .line {
+    width: 120%;
+    height: 47px;
+    background: rgba(255, 255, 0, 0.7);
+    -webkit-transform:
+        translateY(-20px)
+        translateX(5px)
+        rotate(27deg); 
+    transform: rotate(27deg) translateX(5px) translateY(-20px);
+    position: absolute;
+    top: 93px;
+    left: -50px;
   }
   #box-box-box {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: rgba(255, 179, 0, 0.5);
+    background: rgba(255, 179, 0, 0.9);
     display: none;
   }
   #box-box-box h1 {
@@ -157,26 +171,36 @@
     margin: auto;
     color: rgb(0, 0, 0);
     position: relative;
-    top: -70px;
+    top: -35px;
   }
   
   .car-lr {
     position: absolute;
     width: 100%;
-    height: 100%;
+    height: 99%;
     background: rgba(0, 0, 0, 1);
     display: none;
   }
 
   .car-lr h1 {
-    font-size: 11em;
+    font-size: 20em;
     padding: 0;
     font-weight: 900;
     margin: auto;
-    color: rgb(255, 0, 0);
+    color: rgb(195, 255, 0);
     position: relative;
-    top: -70px;
+    top: -175px;
   }
+  .car-lr h1.double {
+    font-size: 13em;
+    padding: 0;
+    font-weight: 900;
+    margin: auto;
+    color: rgb(195, 255, 0);
+    position: relative;
+    top: -80px;
+  }
+
 
   .show-flag {
     display: flex !important;
@@ -286,15 +310,16 @@
       <div id="bot-box-5"><span>Track Temp</span> <h2>{{trackTemp}}°C</h2></div>
       <div id="bot-box-6"><span>Time Left</span> <h2>{{timeLeft}}</h2></div>
 
-      <div id="blue-flag"></div>
-      <div id="yellow-flag"></div>
-      <div [ngClass]="{'show-flag': boxboxbox || fuelLapsRemaining < 1.1}" id="box-box-box"><h1>BOX THIS LAP</h1></div>
+      <div [ngClass]="{'show-flag': flags.indexOf('Blue') > -1}" id="blue-flag"><div class="line"></div></div>
+      <div [ngClass]="{'show-flag': flags.indexOf('Yellow') > -1}" id="yellow-flag"></div>
+      <div [ngClass]="{'show-flag': boxboxbox || fuelLapsRemaining < 1.1}" id="box-box-box"><h1>BOX THIS LAP <br/> {{fuelRemaining}} <small>L</small></h1></div>
 
       <div [ngClass]="{'show-flag': carLR.indexOf('LRCarLeft') > -1}" class="car-lr" id="car-left"> <h1>&#8592;</h1> </div>
       <div [ngClass]="{'show-flag': carLR.indexOf('LRCarRight') > -1}" class="car-lr" id="car-right"> <h1>&#8594;</h1> </div>
-      <div [ngClass]="{'show-flag': carLR.indexOf('LRCarLeftRight') > -1}" class="car-lr" id="car-three"> <h1>&#8592; &#8594;</h1> </div>
-      <div [ngClass]="{'show-flag': carLR.indexOf('LR2CarsLeft') > -1}" class="car-lr" id="car-2-left"> <h1>&#8592; &#8592;</h1> </div>
-      <div [ngClass]="{'show-flag': carLR.indexOf('LR2CarsRight') > -1}" class="car-lr" id="car-2-right"> <h1>&#8594; &#8594;</h1> </div>
+      <div [ngClass]="{'show-flag': carLR.indexOf('LRCarLeftRight') > -1}" class="car-lr show-flag" id="car-three"> <h1 class="double">&#8592; &#8594;</h1> </div>
+      <div [ngClass]="{'show-flag': carLR.indexOf('LR2CarsLeft') > -1}" class="car-lr" id="car-2-left"> <h1 class="double">&#8592; &#8592;</h1> </div>
+      <div [ngClass]="{'show-flag': carLR.indexOf('LR2CarsRight') > -1}" class="car-lr" id="car-2-right"> <h1 class="double">&#8594; &#8594;</h1> </div>
+      <!-- <div class="car-lr show-flag" id="car-2-right"> <h1>&#8594;</h1> </div> -->
     </div>
   </div>
 
