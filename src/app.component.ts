@@ -104,7 +104,7 @@ export class AppComponent implements OnInit {
         else {
           that.lap = data.values.Lap;
           const lapTemp = Math.round(data.values.LapLastLapTime * 100) / 100;
-          if (lapTemp > 0) {
+          if (lapTemp > 0 && that.lapTimeArray.indexOf(lapTemp) === -1) {
             that.lapTimeArray.push(lapTemp);
           }
 
