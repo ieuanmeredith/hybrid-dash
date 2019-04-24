@@ -103,7 +103,10 @@ export class AppComponent implements OnInit {
         }
         else {
           that.lap = data.values.Lap;
-          that.lapTimeArray.push(Math.round(data.values.LapLastLapTime * 100) / 100);
+          const lapTemp = Math.round(data.values.LapLastLapTime * 100) / 100;
+          if (lapTemp > 0) {
+            that.lapTimeArray.push(lapTemp);
+          }
 
           if (that.lapTimeArray.length > 2) {
             that.estLapTime = that.getAvgLap();
