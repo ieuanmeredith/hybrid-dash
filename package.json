@@ -2,7 +2,7 @@
   "name": "hybrid-dash",
   "productName": "hybrid-dash",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Hybrid Dash",
   "main": "src/index.ts",
   "scripts": {
     "start": "electron-forge start",
