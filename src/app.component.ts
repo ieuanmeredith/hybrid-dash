@@ -30,6 +30,7 @@ export class AppComponent implements OnInit {
   public firstLightRpm: number = 0;
   public lastLightRpm: number = 0;
   public rpmLightArray: number[];
+  public fuelWeightRatio: number = 0.75;
 
   public gear: string = "N";
 
@@ -121,7 +122,8 @@ export class AppComponent implements OnInit {
         const fuelPerHour = that.getAvgFuelPerHour();
         const fuelPerLap = fuelPerHour / lapsPerHour;
         that.fuelPerLap = (Math.round(fuelPerLap * 100) / 100).toFixed(2);
-        that.fuelLapsRemaining = (((data.values.FuelLevel * 0.75) - 0.2) / fuelPerLap);
+        // minus 0.2L in kg to exclude last 0.2l from calculations
+        that.fuelLapsRemaining = (((data.values.FuelLevel * that.fuelWeightRatio) - (0.2 * that.fuelWeightRatio)) / fuelPerLap);
         if (that.fuelLapsRemaining > 2) { that.boxboxbox = false; }
       }
 
@@ -140,7 +142,10 @@ export class AppComponent implements OnInit {
     });
 
     iracing.on("SessionInfo", function (data: any): void {
-      that.maxFuel = data.data.DriverInfo.DriverCarFuelMaxLtr * 0.75;
+      if (that.fuelWeightRatio !== data.data.DriverInfo.DriverCarFuelKgPerLtr) {
+        that.fuelWeightRatio = data.data.DriverInfo.DriverCarFuelKgPerLtr;
+      }
+      that.maxFuel = data.data.DriverInfo.DriverCarFuelMaxLtr * that.fuelWeightRatio;
 
       if (that.estLapTime === 0) { that.estLapTime = data.data.DriverInfo.DriverCarEstLapTime; }
 
