@@ -18,6 +18,8 @@ export class AppComponent implements OnInit {
   public lap: number = 0;
   public lapTimeArray: number[] = [];
 
+  public bufferLength: number = 18000;
+
   public estLapTime: number = 0;
   public maxFuel: number = 0;
   public fuelUsageBuffer: number[] = [];
@@ -88,13 +90,13 @@ export class AppComponent implements OnInit {
       that.trackTemp = data.values.TrackTempCrew.toFixed(2);
       that.fuelRemaining = (Math.round(data.values.FuelLevel * 100) / 100).toFixed(2);
 
-      if (that.fuelUsageBuffer.length <= 3600) {
+      if (that.fuelUsageBuffer.length <= that.bufferLength) {
         if (Math.floor(data.values.Speed) !== 0 && data.values.FuelLevel > 0.2) {
           that.fuelUsageBuffer.push(Math.round(data.values.FuelUsePerHour * 100) / 100);
         }
       }
       else {
-        that.fuelUsageBuffer = that.fuelUsageBuffer.splice(1, 3599);
+        that.fuelUsageBuffer = that.fuelUsageBuffer.splice(1, (that.bufferLength - 1));
         that.fuelUsageBuffer.push(Math.round(data.values.FuelUsePerHour * 100) / 100);
       }
 
