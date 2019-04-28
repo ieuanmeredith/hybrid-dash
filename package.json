@@ -55,7 +55,7 @@
     "electron": "^4.1.4",
     "electron-compile": "^6.4.4",
     "electron-devtools-installer": "^2.2.4",
-    "electron-squirrel-startup": "^1.0.1",
+    "electron-squirrel-startup": "^1.0.0",
     "node-irsdk": "^2.1.4",
     "reflect-metadata": "^0.1.13",
     "tslib": "^1.9.3",
