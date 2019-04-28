@@ -134,8 +134,8 @@ export class AppComponent implements OnInit {
 
       const secondsLeft = Math.floor(data.values.SessionTimeRemain);
       const hours = Math.floor(secondsLeft / 3600);
-      const minutes = Math.floor(secondsLeft / 60);
-      const seconds = secondsLeft - minutes * 60;
+      const minutes = Math.floor((secondsLeft / 60) - hours * 60);
+      const seconds = secondsLeft - Math.floor((secondsLeft / 60)) * 60;
       that.timeLeft = `${that.pad(hours.toString(), 2, 0)}:${that.pad(minutes.toString(), 2, 0)}:${that.pad(seconds.toString(), 2, 0)}`;
       that.rpm = data.values.RPM;
       that.gear = data.values.Gear === 0 ? "N"
