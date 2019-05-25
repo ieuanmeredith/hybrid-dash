@@ -123,9 +123,9 @@ export class AppComponent implements OnInit {
         const lapsPerHour = 3600 / that.estLapTime;
         const fuelPerHour = that.getAvgFuelPerHour();
         const fuelPerLap = fuelPerHour / lapsPerHour;
-        that.fuelPerLap = (Math.round(fuelPerLap * 100) / 100).toFixed(2);
         // minus 0.2L in kg to exclude last 0.2l from calculations
         that.fuelLapsRemaining = (((data.values.FuelLevel * that.fuelWeightRatio) - (0.2 * that.fuelWeightRatio)) / fuelPerLap);
+        that.fuelPerLap = (data.values.FuelLevel / that.fuelLapsRemaining).toFixed(2);
         if (that.fuelLapsRemaining > 2) { that.boxboxbox = false; }
       }
 
