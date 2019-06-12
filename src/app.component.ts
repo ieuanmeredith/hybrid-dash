@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
   public lastLightRpm: number = 0;
   public rpmLightArray: number[];
   public fuelWeightRatio: number = 0.75;
+  public limiter: boolean = false;
 
   public gear: string = "N";
 
@@ -141,6 +142,8 @@ export class AppComponent implements OnInit {
       that.gear = data.values.Gear === 0 ? "N"
       : data.values.Gear === -1 ? "R"
       : data.values.Gear;
+
+      that.limiter = data.values.dcPitSpeedLimiterToggle;
     });
 
     iracing.on("SessionInfo", function (data: any): void {

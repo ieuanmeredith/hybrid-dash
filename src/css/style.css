@@ -255,3 +255,12 @@ h2 {
   -webkit-border-bottom-left-radius: 4px 3px;
   background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 100%);
 }
+.led-blink {
+  animation: blinker 0.5s linear infinite;
+}
+
+@keyframes blinker {
+  0%, 50% {
+    opacity: 0;
+  }
+}
