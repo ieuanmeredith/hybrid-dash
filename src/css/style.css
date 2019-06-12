@@ -257,6 +257,8 @@ h2 {
 }
 .led-blink {
   animation: blinker 0.5s linear infinite;
+  background-image: -webkit-linear-gradient(top, #fb1304 0%, #ff816e 50%, #ff774d 100%);
+  box-shadow: 0px 0px 10px 1px #ff7970;
 }
 
 @keyframes blinker {
