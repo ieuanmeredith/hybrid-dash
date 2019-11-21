@@ -37,6 +37,10 @@ export class AppComponent implements OnInit {
 
   public gear: string = "N";
 
+  public brakeBias: string = "50.0";
+  public bbDisplayCounter: number = 1000;
+  public bbInterval: any;
+
   public pad(n: string, width: number, z: any) {
     z = z || "0";
     n = n + "";
@@ -57,6 +61,11 @@ export class AppComponent implements OnInit {
       sum += this.fuelUsageBuffer[i];
     }
     return sum / this.fuelUsageBuffer.length;
+  }
+
+  private clearBbInterval() {
+    clearInterval(this.bbInterval);
+    this.bbInterval = null;
   }
 
   public ngOnInit(): void {
@@ -90,6 +99,22 @@ export class AppComponent implements OnInit {
       that.carLR = data.values.CarLeftRight;
       that.trackTemp = data.values.TrackTempCrew.toFixed(2);
       that.fuelRemaining = (Math.round(data.values.FuelLevel * 100) / 100).toFixed(2);
+
+      if (that.brakeBias !== data.values.dcBrakeBias) {
+        that.brakeBias = data.values.dcBrakeBias;
+
+        if (!that.bbInterval) {
+          that.bbInterval = setInterval(() => {
+            if (that.bbDisplayCounter < 1000) {
+              that.bbDisplayCounter += 100;
+            } else {
+              that.clearBbInterval();
+            }
+          }, 100);
+        } else {
+          that.bbDisplayCounter = 0;
+        }
+      }
 
       if (that.fuelUsageBuffer.length <= that.bufferLength) {
         if (Math.floor(data.values.Speed) !== 0 && data.values.FuelLevel > 0.2) {
