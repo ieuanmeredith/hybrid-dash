@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
 
   public gear: string = "N";
 
-  public brakeBias: string = "50.0";
+  public brakeBias: number = 0;
   public bbDisplayCounter: number = 1000;
   public bbInterval: any;
 
@@ -104,6 +104,7 @@ export class AppComponent implements OnInit {
         that.brakeBias = data.values.dcBrakeBias;
 
         if (!that.bbInterval) {
+          that.bbDisplayCounter = 0;
           that.bbInterval = setInterval(() => {
             if (that.bbDisplayCounter < 1000) {
               that.bbDisplayCounter += 100;

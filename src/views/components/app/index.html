@@ -58,7 +58,7 @@
       <div [ngClass]="{'show-flag': carLR.indexOf('LRCarLeftRight') > -1}" class="car-lr show-flag" id="car-three"> <h1 class="double">&#8592; &#8594;</h1> </div>
       <div [ngClass]="{'show-flag': carLR.indexOf('LR2CarsLeft') > -1}" class="car-lr" id="car-2-left"> <h1 class="double">&#8592; &#8592;</h1> </div>
       <div [ngClass]="{'show-flag': carLR.indexOf('LR2CarsRight') > -1}" class="car-lr" id="car-2-right"> <h1 class="double">&#8594; &#8594;</h1> </div>
-      <div [ngClass]="{'show-flag': bbDisplayCounter < 1000}" class="brake-bias" id="brake-bias"> <h1 class="double">{{brakeBias}}</h1> </div>
+      <div [ngClass]="{'show-flag': bbDisplayCounter < 1000}" class="brake-bias" id="brake-bias"> <h1 class="double">{{brakeBias.toFixed(1)}}</h1> </div>
     </div>
   </div>
 
