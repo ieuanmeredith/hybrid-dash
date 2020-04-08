@@ -26,6 +26,8 @@ export class AppComponent implements OnInit {
   public fuelLapsRemaining: number = 0;
   public fuelPerLap: string | number = 0;
   public fuelRemaining: string | number = 0;
+  public fuelRemainingSol: number = 0;
+  public fuelLastLap: string | number = 0;
   public boxboxbox: boolean = false;
 
   public rpm: number = 0;
@@ -123,7 +125,7 @@ export class AppComponent implements OnInit {
         }
       }
       else {
-        that.fuelUsageBuffer = that.fuelUsageBuffer.splice(1, (that.bufferLength - 1));
+        that.fuelUsageBuffer = that.fuelUsageBuffer.splice(0, 1);
         that.fuelUsageBuffer.push(Math.round(data.values.FuelUsePerHour * 100) / 100);
       }
 
@@ -145,6 +147,15 @@ export class AppComponent implements OnInit {
           that.fuelLapsRemaining < 2 ? that.boxboxbox = true : that.boxboxbox = false;
         }
       }
+
+      const fuelLevel = (Math.round(data.values.FuelLevel * 100) / 100);
+      const fuelUsed = that.fuelRemainingSol - fuelLevel;
+      if (fuelUsed > 0) {
+        that.fuelLastLap = fuelUsed.toFixed(2);
+      } else {
+        that.fuelLastLap = "---";
+      }
+      that.fuelRemainingSol = fuelLevel;
 
       if (that.maxFuel > 0 && that.estLapTime > 0) {
         const lapsPerHour = 3600 / that.estLapTime;
