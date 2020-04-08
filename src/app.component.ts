@@ -28,6 +28,8 @@ export class AppComponent implements OnInit {
   public fuelRemaining: string | number = 0;
   public fuelRemainingSol: number = 0;
   public fuelLastLap: string | number = 0;
+  public fuelThisLap: number = 0;
+  public fuelUseLaps: number[] = [];
   public boxboxbox: boolean = false;
 
   public rpm: number = 0;
@@ -42,6 +44,8 @@ export class AppComponent implements OnInit {
   public brakeBias: number = 0;
   public bbDisplayCounter: number = 1000;
   public bbInterval: any;
+
+  private fuelLastTick: number = 0;
 
   public pad(n: string, width: number, z: any) {
     z = z || "0";
@@ -94,13 +98,17 @@ export class AppComponent implements OnInit {
     });
 
     iracing.on("Telemetry", function (data: any): void {
+      const fuelLevel = (Math.round(data.values.FuelLevel * 100) / 100);
+
       that.soc = Math.floor(data.values.EnergyERSBatteryPct *  100);
       that.deploy = Math.floor(data.values.EnergyMGU_KLapDeployPct * 100);
       that.flags = data.values.SessionFlags;
       that.deployMode = data.values.dcMGUKDeployFixed;
       that.carLR = data.values.CarLeftRight;
       that.trackTemp = data.values.TrackTempCrew.toFixed(2);
-      that.fuelRemaining = (Math.round(data.values.FuelLevel * 100) / 100).toFixed(2);
+      that.fuelRemaining = fuelLevel.toFixed(2);
+      that.fuelThisLap += (that.fuelLastTick - fuelLevel) > 0 ? that.fuelLastTick - fuelLevel : 0;
+      that.fuelLastTick = fuelLevel;
 
       if (that.brakeBias !== data.values.dcBrakeBias) {
         that.brakeBias = data.values.dcBrakeBias;
@@ -134,6 +142,17 @@ export class AppComponent implements OnInit {
           that.lap = data.values.Lap;
         }
         else {
+          that.fuelThisLap = 0;
+
+          if (that.fuelRemainingSol - fuelLevel > 0) {
+            that.fuelLastLap = (that.fuelRemainingSol - fuelLevel).toFixed(2);
+            that.fuelUseLaps.push(that.fuelRemainingSol - fuelLevel);
+          } else {
+            that.fuelLastLap = "--";
+          }
+
+          that.fuelRemainingSol = fuelLevel;
+
           that.lap = data.values.Lap;
           const lapTemp = Math.round(data.values.LapLastLapTime * 100) / 100;
           if (lapTemp > 0 && that.lapTimeArray.indexOf(lapTemp) === -1) {
@@ -148,22 +167,14 @@ export class AppComponent implements OnInit {
         }
       }
 
-      const fuelLevel = (Math.round(data.values.FuelLevel * 100) / 100);
-      const fuelUsed = that.fuelRemainingSol - fuelLevel;
-      if (fuelUsed > 0) {
-        that.fuelLastLap = fuelUsed.toFixed(2);
-      } else {
-        that.fuelLastLap = "---";
-      }
-      that.fuelRemainingSol = fuelLevel;
-
       if (that.maxFuel > 0 && that.estLapTime > 0) {
         const lapsPerHour = 3600 / that.estLapTime;
         const fuelPerHour = that.getAvgFuelPerHour();
         const fuelPerLap = fuelPerHour / lapsPerHour;
         // minus 0.2L in kg to exclude last 0.2l from calculations
         that.fuelLapsRemaining = (((data.values.FuelLevel * that.fuelWeightRatio) - (0.2 * that.fuelWeightRatio)) / fuelPerLap);
-        that.fuelPerLap = (data.values.FuelLevel / that.fuelLapsRemaining).toFixed(2);
+        const fuelUseSum = that.fuelUseLaps.reduce((a, b) => a + b, 0);
+        that.fuelPerLap = (fuelUseSum / that.fuelUseLaps.length).toFixed(2);
         if (that.fuelLapsRemaining > 2) { that.boxboxbox = false; }
       }
 

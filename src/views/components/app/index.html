@@ -36,15 +36,19 @@
     </div>
     <div id="bottom-section">      
       <div id="bot-box-1"><span>Delta</span> <h2>{{deltaToSesBest}}</h2></div>
-      <div id="bot-box-2"><span>Fuel est laps</span> <h2>{{fuelLapsRemaining.toFixed(2)}}</h2></div>
+      <div id="bot-box-2"><span>Fuel / Est laps</span> <h2>{{fuelRemaining}} / {{fuelLapsRemaining.toFixed(2)}}</h2></div>
 
       <div class="hor-line">
       </div>
 
       <div id="bot-box-3"><span>Deploy Mode</span> <h2>{{deployMode}}</h2></div>
       <div id="bot-box-4">
-        <span>Fuel (L) / Fuel per lap (L)</span> <h2>{{fuelRemaining}} / {{fuelPerLap}}</h2>
-        <span><small>Fuel last lap (L) <h2>{{fuelLastLap</h2></small></span>
+        <span>Fuel Usage This/Last/Avg (L)</span> 
+        <h2 style="font-size: 1.4em;">
+          <strong>{{fuelThisLap.toFixed(2)}}</strong> / 
+          <strong style="color: cornflowerblue;">{{fuelLastLap}}</strong> / 
+          <strong style="color: darksalmon;">{{fuelPerLap}}</strong>
+        </h2>
       </div>      
 
       <div class="hor-line">
